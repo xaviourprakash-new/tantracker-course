@@ -31,6 +31,7 @@ import poppins900 from "@fontsource/poppins/900.css?url";
 import { ChartColumnBigIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getSignedInUserId } from "@/data/getSignedInUserId";
+import { Toaster } from "@/components/ui/sonner";
 
 export const Route = createRootRoute({
 	notFoundComponent() {
@@ -163,6 +164,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 						</div>
 					</nav>
 					{children}
+					<Toaster />
 					<Scripts />
 				</body>
 			</html>

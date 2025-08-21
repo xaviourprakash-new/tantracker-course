@@ -22,14 +22,15 @@ import { cn } from "@/lib/utils";
 import { Calendar } from "./ui/calendar";
 import { CalendarIcon } from "lucide-react";
 import { Input } from "./ui/input";
-import { format } from "date-fns";
+import { addDays, format } from "date-fns";
+import { categoriesTable } from "@/db/schema";
 
-const transactionFormSchema = z.object({
+export const transactionFormSchema = z.object({
 	transactionType: z.enum(["income", "expense"]),
 	categoryId: z.coerce.number().positive("Please select a category"),
 	transactionDate: z
 		.date()
-		.max(new Date(), "Transaction date cannot be in the future"),
+		.max(addDays(new Date(), 1), "Transaction date cannot be in the future"),
 	amount: z.coerce.number().positive("Amount must be a greater than 0"),
 	description: z
 		.string()
@@ -37,7 +38,15 @@ const transactionFormSchema = z.object({
 		.max(300, "Description must contain a maximum of 300 characters"),
 });
 
-export function TransactionForm() {
+export function TransactionForm({
+	categories,
+	onSubmit,
+}: {
+	categories: (typeof categoriesTable.$inferSelect)[];
+	onSubmit: (
+		data: z.infer<typeof transactionFormSchema>,
+	) => Promise<void> | void;
+}) {
 	const form = useForm<z.infer<typeof transactionFormSchema>>({
 		resolver: zodResolver(transactionFormSchema) as any,
 		defaultValues: {
@@ -49,13 +58,16 @@ export function TransactionForm() {
 		},
 	});
 
-	const handleSubmit = (data: z.infer<typeof transactionFormSchema>) => {
-		console.log(data);
-	};
+	// React Hook Form watch so UI updates when transactionType changes
+	const transactionType = form.watch("transactionType");
+
+	const filteredCategories = categories.filter(
+		(cat) => cat.type === transactionType,
+	);
 
 	return (
 		<Form {...form}>
-			<form onSubmit={form.handleSubmit(handleSubmit)}>
+			<form onSubmit={form.handleSubmit(onSubmit)}>
 				<fieldset className="grid grid-cols-2 gap-y-5 gap-x-2">
 					<FormField
 						control={form.control}
@@ -65,7 +77,13 @@ export function TransactionForm() {
 								<FormItem>
 									<FormLabel>Transaction type</FormLabel>
 									<FormControl>
-										<Select value={field.value} onValueChange={field.onChange}>
+										<Select
+											value={field.value}
+											onValueChange={(val) => {
+												field.onChange(val);
+												// reset category immediately when transaction type changes
+												form.setValue("categoryId", 0);
+											}}>
 											<SelectTrigger className="w-full">
 												<SelectValue placeholder="Transaction type" />
 											</SelectTrigger>
@@ -94,7 +112,15 @@ export function TransactionForm() {
 											<SelectTrigger className="w-full">
 												<SelectValue placeholder="Category" />
 											</SelectTrigger>
-											<SelectContent></SelectContent>
+											<SelectContent>
+												{filteredCategories.map((category) => (
+													<SelectItem
+														key={category.id}
+														value={category.id.toString()}>
+														{category.name}
+													</SelectItem>
+												))}
+											</SelectContent>
 										</Select>
 									</FormControl>
 									<FormMessage />

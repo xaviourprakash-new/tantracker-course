@@ -146,7 +146,7 @@ UpgradeLog*.htm
 
 # Temp files when opening LibreOffice on ubuntu
 .~lock.*
- 
+
 # svn
 .svn
 
@@ -220,6 +220,43 @@ project.lock.json
 
 # UWP Projects
 AppPackages/
+
+# Vite / frontend build & local secrets
+/dist
+/build
+/.vite
+/.vite-deps
+/.turbo
+
+# Environment files (local secrets)
+.env
+.env.local
+.env.*.local
+.env.*.secret
+
+# Package manager logs & caches
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-debug.log*
+.pnpm-store
+.cache/
+.node_modules/
+package-lock.json
+
+# Tooling caches
+/.parcel-cache
+/.cache
+/.output
+
+# TanStack / Nitro build caches
+.tanstack
+.nitro
+
+# Deployment / platform files
+.vercel/
+.netlify/
 
 #####
 # End of core ignore list, below put you custom 'per project' settings (patterns or path)
