@@ -52,7 +52,7 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
 	const { month, year, yearsRange, transactions } = Route.useLoaderData();
-	console.log({ transactions });
+
 	return (
 		<AllTransactions
 			transactions={transactions}
