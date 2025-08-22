@@ -41,11 +41,19 @@ export const transactionFormSchema = z.object({
 export function TransactionForm({
 	categories,
 	onSubmit,
+	defaultValues,
 }: {
 	categories: (typeof categoriesTable.$inferSelect)[];
 	onSubmit: (
 		data: z.infer<typeof transactionFormSchema>,
 	) => Promise<void> | void;
+	defaultValues?: {
+		transactionType: "income" | "expense";
+		amount: number;
+		categoryId: number;
+		description: string;
+		transactionDate: Date;
+	};
 }) {
 	const form = useForm<z.infer<typeof transactionFormSchema>>({
 		resolver: zodResolver(transactionFormSchema) as any,
@@ -55,6 +63,7 @@ export function TransactionForm({
 			transactionDate: new Date(),
 			amount: 0,
 			description: "",
+			...defaultValues,
 		},
 	});
 
